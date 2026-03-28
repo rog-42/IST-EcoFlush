@@ -82,6 +82,12 @@
   margin-left: 10px;
 }
 
+.leaderboard-entry .level {
+  color: #4da3ff;
+  font-weight: bold;
+  margin: 0 8px;
+}
+
 .leaderboard-entry .liters {
   color: #ccc;
   font-size: 18px;

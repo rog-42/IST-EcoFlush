@@ -1,0 +1,43 @@
+.waterreal-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 10px;
+  background: #4da3ff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.waterreal-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.waterreal-box {
+  background:#1c1c1e;
+  padding: 20px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.waterreal-btn.success {
+  background: #4caf50 !important;
+  color: white;
+  border: none;
+  opacity: 1;
+}
+
+.waterreal-btn:disabled {
+  opacity: 0.8;
+  cursor: default;
+}

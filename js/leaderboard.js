@@ -30,11 +30,15 @@ export function computeMonthlyTotal(history) {
     return total;
 }
 
-export function buildLeaderboard(myTotal, friends) {
-    const list = [{ name: "You", liters: myTotal }];
+export function buildLeaderboard(myTotal, myLevel, friends) {
+    const list = [{ name: "You", liters: myTotal, level: myLevel }];
 
     for (const f of friends) {
-        list.push({ name: f.name, liters: f.liters });
+        list.push({
+            name: f.name,
+            liters: f.liters,
+            level: f.level || Math.floor(Math.random() * 5) + 1
+        });
     }
 
     return list.sort((a, b) => a.liters - b.liters);

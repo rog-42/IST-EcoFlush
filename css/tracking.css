@@ -231,11 +231,11 @@
 
 /* XP toast */
 .xp-toast {
-  position: fixed;
+  position: absolute;
+  bottom: 72px;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 18px;
-  z-index: 1200;
+  z-index: 999;
   pointer-events: auto;
   width: calc(100% - 48px);
   max-width: 420px;

@@ -50,7 +50,8 @@ const app = Vue.createApp({
 
             // challenges
             challenges: [],           // active challenge objects
-            completedChallengeIDs: [],
+            completedChallenges: [],
+            claimedChallenges: [],
 
             // persistence
             history: {},
@@ -60,7 +61,15 @@ const app = Vue.createApp({
             screen: "leaderboard",
             todayString: new Date().toDateString(),
 
-            xpBurst: { visible: false, amount: 0, source: '' }
+            xpBurst: { visible: false, amount: 0, source: '' },
+
+            waterReal: {
+                visible: false,
+                reading: null,
+                countdown: 24 * 60 * 60, // 24 hours in seconds
+                interval: null,
+                submitted: false
+            }
         };
     },
 
@@ -89,7 +98,7 @@ const app = Vue.createApp({
         },
 
         sortedLeaderboard() {
-            return buildLeaderboard(this.myMonthlyTotal, this.friends);
+            return buildLeaderboard(this.myMonthlyTotal, this.level, this.friends);
         },
         
         // map of challenge id -> numeric XP for fast lookups in templates
@@ -234,7 +243,8 @@ const app = Vue.createApp({
 
             this.friends.push({
                 name: name.trim(),
-                liters: randomMonthConsumption(this.averageDailyConsumption)
+                liters: randomMonthConsumption(this.averageDailyConsumption),
+                level: Math.floor(Math.random() * 5) + 1  // random level 1-5
             });
 
             saveFriends(this.friends);
@@ -276,28 +286,65 @@ const app = Vue.createApp({
         
         // ---------- challenges API wrappers ----------
         generateChallengesAndSync() {
-          this.challenges = generateDailyChallenges();
-          this.refreshLocalChallengeState();
+            this.challenges = generateDailyChallenges();
+            this.refreshLocalChallengeState();
         },
 
         refreshLocalChallengeState() {
-          const state = getChallengeState();
-          this.challenges = state.active || [];
-          this.completedChallengeIDs = state.completed || [];
+            const state = getChallengeState();
+            this.challenges = state.active || [];
+            this.completedChallenges = state.completed || [];
+            this.claimedChallenges = state.claimed || [];
         },
 
         claimXPFor(challengeId) {
-          const xp = claimChallengeXP(challengeId);
-          if (xp > 0) {
-            this.addXP(xp);
-            this.refreshLocalChallengeState();
-          }
+            const xp = claimChallengeXP(challengeId);
+            if (xp > 0) {
+                this.addXP(xp);
+                this.refreshLocalChallengeState();
+            } 
         },
 
         markManualPractice(id) {
-          completeChallenge(id);
-          this.refreshLocalChallengeState();
-        }
+            completeChallenge(id);
+            this.refreshLocalChallengeState();
+        },
+
+        
+        // ---------- WaterReal ----------
+        openWaterReal() {
+            this.waterReal.visible = true;
+            this.startWaterRealCountdown();
+        },
+
+        startWaterRealCountdown() {
+            if (this.waterReal.interval) return;
+
+            this.waterReal.interval = setInterval(() => {
+                if (this.waterReal.countdown > 0) {
+                this.waterReal.countdown--;
+                } else {
+                clearInterval(this.waterReal.interval);
+                this.waterReal.interval = null;
+                }
+            }, 1000);
+        },
+
+        fakeUploadPhoto() {
+            const fakeReading = this.myMonthlyTotal;
+            this.waterReal.reading = fakeReading;
+
+            // XP reward
+            const xpReward = 30;
+            this.addXP(xpReward, "WaterReal");
+
+            // Mark as submitted
+            this.waterReal.submitted = true;
+
+            // Close modal smoothly
+            this.waterReal.visible = false;
+        },
+
     },
 
     mounted() {

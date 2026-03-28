@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="css/navbar.css">
   <link rel="stylesheet" href="css/tracking.css">
   <link rel="stylesheet" href="css/leaderboard.css">
-
+  <link rel="stylesheet" href="css/waterreal.css">
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 
@@ -74,10 +74,20 @@
             >
                 <span class="rank">{{ index + 1 }}</span>
                 <span class="name">{{ entry.name }}</span>
+                <span class="level">Nível {{ entry.level }}</span>
                 <span class="liters">{{ entry.liters }} L</span>
             </div>
         </div>
 
+        <button 
+        class="waterreal-btn" 
+        @click="openWaterReal"
+        :disabled="waterReal.submitted"
+        :class="{ success: waterReal.submitted }"
+        >
+        <span v-if="!waterReal.submitted">⚠️ WaterReal — Lê o teu Contador!</span>
+        <span v-else>✅ Leitura Submetida!</span>
+        </button>
     </div>
 
     <!-- TRACKING SCREEN -->
@@ -176,15 +186,40 @@
         </div>
 
         <div class="challenge-desc">{{ c.description }}</div>
+            <div class="challenge-actions">
+                <!-- Already claimed -->
+                <button
+                    v-if="claimedChallenges.includes(c.id)"
+                    class="tiny-btn disabled"
+                    disabled
+                >
+                    XP Recolhido
+                </button>
 
-        <div class="challenge-actions">
-            <button v-if="completedChallengeIDs.includes(c.id)" class="tiny-btn" @click="claimXPFor(c.id)">Recolher</button>
-            <button v-else class="tiny-btn outline" @click="markManualPractice(c.id)">Marcar</button>
-            <div class="challenge-status">
-            <span v-if="completedChallengeIDs.includes(c.id)">✅ Concluído</span>
-            <span v-else>⏳ Pendente</span>
+                <!-- Completed but not claimed -->
+                <button
+                    v-else-if="completedChallenges.includes(c.id)"
+                    class="tiny-btn"
+                    @click="claimXPFor(c.id)"
+                >
+                    Recolher
+                </button>
+
+                <!-- Not completed -->
+                <button
+                    v-else
+                    class="tiny-btn outline"
+                    @click="markManualPractice(c.id)"
+                >
+                    Marcar
+                </button>
+
+                <div class="challenge-status">
+                    <span v-if="claimedChallenges.includes(c.id)">🏆 Concluído</span>
+                    <span v-else-if="completedChallenges.includes(c.id)">✅ Concluído</span>
+                    <span v-else>⏳ Pendente</span>
+                </div>
             </div>
-        </div>
         </div>
     </section>
 
@@ -203,7 +238,31 @@
     </section>
 
     </div>
+    <!-- WaterReal PopUp-->
+    <div v-if="waterReal.visible" class="waterreal-modal">
+        <div class="waterreal-box">
+            <h3>📸 WaterReal</h3>
 
+            <p>
+            Tens <strong>{{ Math.floor(waterReal.countdown / 3600) }}h 
+            {{ Math.floor((waterReal.countdown % 3600) / 60) }}m</strong> restantes
+            para submeter a tua leitura!
+            </p>
+
+            <p>
+            A fotografia e análise de imagens não foi implementada.<br>
+            Para este demo vamos confiar em ti 😉
+            </p>
+
+            <button class="tiny-btn" @click="fakeUploadPhoto">
+            Enviar Foto (Fake)
+            </button>
+
+            <button class="tiny-btn outline" @click="waterReal.visible = false">
+            Fechar
+            </button>
+        </div>
+    </div>
 </div>
 
 <button id="reset-btn" onclick="if(confirm('Reset all app data? This cannot be undone.')){ localStorage.clear(); location.reload(); }" aria-label="Reset app">
@@ -214,3 +273,4 @@
 
 </body>
 </html>
+
