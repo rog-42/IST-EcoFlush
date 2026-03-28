@@ -1,0 +1,58 @@
+body {
+  background: #121212;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  color: #e0e0e0;
+}
+
+.phone {
+  width: 360px;
+  height: 800px;
+  background: #1c1c1e;
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 0 25px rgba(0,0,0,0.6);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* small reset button positioned to the right of the centered phone */
+#reset-btn {
+  position: fixed;
+  top: 36px;
+  left: calc(50% + 200px); /* places it just to the right of the centered phone (360px wide) */
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 8px;
+  background: #b00020;
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  cursor: pointer;
+  z-index: 1200;
+}
+
+/* hover / active */
+#reset-btn:hover { background: #9a0018; }
+#reset-btn:active { background: #7a0016; }
+
+/* small-screen fallback: move button to top-right corner */
+@media (max-width: 900px) {
+  #reset-btn {
+    left: auto;
+    right: 12px;
+    top: 12px;
+    transform: none;
+  }
+}

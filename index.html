@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoFlush</title>
+
+  <!-- Load separated CSS files -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/tracking.css">
+  <link rel="stylesheet" href="css/leaderboard.css">
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+
+<body>
+<div id="app" class="phone">
+
+    <!-- XP toast -->
+    <transition name="xp-toast-fade">
+    <div v-show="xpBurst.visible" class="xp-toast" role="status" aria-live="polite" @click="xpBurst.visible = false">
+        <div class="xp-toast-inner">
+        <span class="xp-emoji">✨</span>
+        <div class="xp-text">
+            <div class="xp-line">+{{ xpBurst.amount }} XP</div>
+            <div class="xp-sub">{{ xpBurst.source }}</div>
+        </div>
+        <button class="xp-close" aria-label="Fechar XP" @click.stop="xpBurst.visible = false">✕</button>
+        </div>
+    </div>
+    </transition>
+
+    <!-- Navigation bar -->
+    <nav class="navbar">
+        <button 
+            :class="{ active: screen === 'leaderboard' }"
+            @click="changeScreen('leaderboard')">
+            Ranking
+        </button>
+
+        <button 
+            :class="{ active: screen === 'tracking' }"
+            @click="changeScreen('tracking')">
+            Registo
+        </button>
+    </nav>
+
+    <!-- LEADERBOARD SCREEN -->
+    <div v-if="screen === 'leaderboard'" class="leaderboard">
+
+        <button class="add-friend-btn" @click="promptAddFriend">
+            + Adicionar Amigo(a)
+        </button>
+
+        <h2>Ranking Mensal</h2>
+        <p class="subtitle">Total de Água Gasta este Mês</p>
+
+        <div class="your-rank">
+            <div class="big-rank">
+                {{ sortedLeaderboard.findIndex(e => e.name === 'You') + 1 }}
+            </div>
+            <div class="your-liters">
+                Eu — {{ myMonthlyTotal }} L
+            </div>
+        </div>
+
+        <!-- Scrollable leaderboard list -->
+        <div class="leaderboard-scroll">
+            <div 
+                v-for="(entry, index) in sortedLeaderboard" 
+                :key="index" 
+                class="leaderboard-entry"
+            >
+                <span class="rank">{{ index + 1 }}</span>
+                <span class="name">{{ entry.name }}</span>
+                <span class="liters">{{ entry.liters }} L</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TRACKING SCREEN -->
+    <div v-if="screen === 'tracking'" class="tracking">
+
+    <header class="topbar centered">
+        <h2 class="page-title">Rastreador de Água</h2>
+        <p class="subtitle">Diário · Mensal</p>
+    </header>
+
+    <h3 class="section-title">Registo</h3>
+
+    <section class="totals-row">
+        <div class="total-card total-daily">
+        <div class="total-label">Diário</div>
+        <div class="total-value">{{ totalLiters }} L</div>
+        </div>
+
+        <div class="total-card total-monthly">
+        <div class="total-label">Mensal</div>
+        <div class="total-value">{{ myMonthlyTotal }} L</div>
+        </div>
+    </section>
+
+    <section class="controls-row">
+
+        <!-- Half Flush -->
+        <div class="control-card">
+        <div class="control-row-header">
+            <div class="control-title-row">
+            <div class="control-title">🚽 Descarga Média</div>
+            <div class="control-sub">
+                +3 L
+                <span class="inline-xp" v-if="challengeXPMap['half_flush'] > 0">• +{{ challengeXPMap['half_flush'] }} XP</span>
+            </div>
+            </div>
+            <button class="tiny-btn inline-add" @click="addHalfFlush">Adicionar</button>
+        </div>
+        </div>
+
+        <!-- Shower -->
+        <div class="control-card">
+        <div class="control-row-header">
+            <div class="control-title-row">
+            <div class="control-title">🚿 Duche</div>
+            <div class="control-sub small">
+                <div class="stepper-inline">
+                <button class="step-btn" @click="showerMinutesInput = Math.max(0, showerMinutesInput - 1)">–</button>
+                <span class="step-value">{{ showerMinutesInput }}m ×10L</span>
+                <button class="step-btn" @click="showerMinutesInput++">+</button>
+                </div>
+                <span class="inline-xp" v-if="challengeXPMap['short_shower'] > 0">• ≤5m → +{{ challengeXPMap['short_shower'] }} XP</span>
+            </div>
+            </div>
+            <button class="tiny-btn inline-add" @click="addShower">Adicionar</button>
+        </div>
+        </div>
+
+        <!-- Full Flush -->
+        <div class="control-card">
+        <div class="control-row-header">
+            <div class="control-title-row">
+            <div class="control-title">🚽 Descarga Completa</div>
+            <div class="control-sub">+6 L</div>
+            </div>
+            <button class="tiny-btn inline-add" @click="addFullFlush">Adicionar</button>
+        </div>
+        </div>
+
+        <!-- Others -->
+        <div class="control-card">
+        <div class="control-row-header">
+            <div class="control-title-row">
+            <div class="control-title">💧 Outros</div>
+            <div class="control-sub small">
+                <div class="stepper-inline">
+                <button class="step-btn" @click="litersInput = Math.max(0, litersInput - 1)">–</button>
+                <span class="step-value">{{ litersInput }} L</span>
+                <button class="step-btn" @click="litersInput++">+</button>
+                </div>
+            </div>
+            </div>
+            <button class="tiny-btn inline-add" @click="addGeneralWaste">Adicionar</button>
+        </div>
+        </div>
+
+    </section>
+
+    <h3 class="section-title">Desafios Diários</h3>
+
+    <section class="challenges-column">
+        <div class="challenge-block" v-for="c in challenges" :key="c.id">
+        <div class="challenge-head">
+            <div class="challenge-title">{{ c.title }}</div>
+            <div class="challenge-xp">{{ c.xp }} XP</div>
+        </div>
+
+        <div class="challenge-desc">{{ c.description }}</div>
+
+        <div class="challenge-actions">
+            <button v-if="completedChallengeIDs.includes(c.id)" class="tiny-btn" @click="claimXPFor(c.id)">Recolher</button>
+            <button v-else class="tiny-btn outline" @click="markManualPractice(c.id)">Marcar</button>
+            <div class="challenge-status">
+            <span v-if="completedChallengeIDs.includes(c.id)">✅ Concluído</span>
+            <span v-else>⏳ Pendente</span>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <h3 class="section-title">Progresso</h3>
+
+    <section class="xp-level-row">
+        <div class="xp-card">
+        <div class="xp-label">XP</div>
+        <div class="xp-value">{{ userXP }}</div>
+        </div>
+
+        <div class="level-card">
+        <div class="level-label">Nível</div>
+        <div class="level-value">#{{ level }}</div>
+        </div>
+    </section>
+
+    </div>
+
+</div>
+
+<button id="reset-btn" onclick="if(confirm('Reset all app data? This cannot be undone.')){ localStorage.clear(); location.reload(); }" aria-label="Reset app">
+  ⟳
+</button>
+
+<script type="module" src="js/app.js"></script>
+
+</body>
+</html>

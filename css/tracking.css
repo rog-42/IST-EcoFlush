@@ -1,0 +1,293 @@
+/* Topbar variants */
+.topbar {
+  margin-bottom: 14px;
+}
+.topbar.centered {
+  text-align: center;
+}
+.topbar.compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+/* Totals row */
+.totals-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.total-card {
+  flex: 1;
+  background: #2a2a2d;
+  padding: 12px;
+  border-radius: 12px;
+  text-align: left;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+.total-label { font-size: 12px; color: #9e9e9e; }
+.total-value { font-size: 22px; color: #4da3ff; font-weight: 700; margin-top: 6px; }
+
+/* Controls grid / compact two-column layout */
+.controls-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.control-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.control-card {
+  background: #232325;
+  padding: 8px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: stretch;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+}
+.control-title { font-weight: 700; font-size: 13px; text-align: left; }
+
+/* single authoritative control-sub definition and small variant */
+.control-sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #cfcfcf;
+  font-size: 12px;
+}
+.control-sub.small, .mini-desc {
+  font-size: 12px;
+  color: #bdbdbd;
+}
+
+/* Inline header inside control-card: title on left, Add button on right */
+.control-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* left side: title + subtext stacked vertically */
+.control-title-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* compact title and subtext */
+.control-title { font-weight: 700; font-size: 13px; }
+.control-sub { color: #cfcfcf; font-size: 12px; display:flex; align-items:center; gap:8px; }
+
+/* inline stepper variant for the compact header */
+.stepper-inline { display:flex; align-items:center; gap:6px; }
+.stepper-inline .step-value { min-width: 44px; text-align:center; color:#e0e0e0; font-size:13px; }
+.stepper-inline .step-btn { width: 26px; height: 26px; font-size:15px; }
+
+/* Buttons: compact variants */
+.btn-full {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: none;
+  background: #4a90e2;
+  color: white;
+  cursor: pointer;
+}
+.btn-full:active { background: #1f5fb0; }
+
+.tiny-btn {
+  padding: 6px 8px;
+  font-size: 12px;
+  border-radius: 8px;
+  background: #4a90e2;
+  color: white;
+  border: none;
+  cursor: pointer;
+  align-self: flex-start;
+  text-align: center;
+}
+.tiny-btn.outline {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #e0e0e0;
+}
+.tiny-btn:active { background: #1f5fb0; }
+
+/* Add button inline styling */
+.inline-add {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+  align-self: center;
+  white-space: nowrap;
+}
+
+/* Stepper (compact) */
+.stepper { display:flex; align-items:center; gap:6px; }
+.step-value { min-width: 36px; text-align:center; color:#e0e0e0; font-size:13px; }
+.step-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: none;
+  background: #3a3a3d;
+  color: #e0e0e0;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.step-btn:active { background: #4da3ff; }
+
+/* Section titles centered and compact */
+.section-title {
+  text-align: center;
+  margin: 10px 0 8px 0;
+  font-size: 13px;
+  color: #cfcfcf;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+/* Inline XP hint (compact) and control-row alignment */
+.inline-xp {
+  color: #ffd166;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255,209,102,0.06);
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+.control-row {
+  margin-top: 6px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Challenges stacked column */
+.challenges-column { margin: 10px 0; display: flex; flex-direction: column; gap: 10px; }
+.challenge-block {
+  background: #232325;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+.challenge-head { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; }
+.challenge-title { font-weight:700; font-size:14px; }
+.challenge-xp { color:#4da3ff; font-weight:700; font-size:13px; }
+.challenge-desc { color:#bdbdbd; font-size:12px; line-height:1.2; margin-bottom:8px; }
+.challenge-actions { display:flex; align-items:center; gap:8px; }
+
+/* XP / Level row */
+.xp-level-row {
+  display:flex;
+  gap:10px;
+  margin-top: 6px;
+}
+.xp-card, .level-card {
+  flex:1;
+  background:#2a2a2d;
+  padding:8px;
+  border-radius:10px;
+  text-align:left;
+}
+.xp-label, .level-label { font-size:11px; color:#9e9e9e; }
+.xp-value, .level-value { font-size:16px; color:#4da3ff; font-weight:700; margin-top:4px; }
+
+/* Utility / small adjustments */
+.flush-amount { color: #4da3ff; font-weight: bold; }
+
+/* Responsive tweaks for narrow viewports */
+@media (max-width: 720px) {
+  .controls-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .phone { width: calc(100% - 32px); margin: 0 auto; }
+  .control-card { padding: 8px; }
+  .tiny-btn { padding: 6px 8px; font-size: 12px; }
+  .total-value { font-size: 20px; }
+}
+
+/* responsive: stack title and button on very narrow screens */
+@media (max-width: 420px) {
+  .control-row-header { flex-direction: column; align-items: stretch; gap: 6px; }
+  .inline-add { align-self: flex-end; }
+}
+
+/* XP toast */
+.xp-toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 18px;
+  z-index: 1200;
+  pointer-events: auto;
+  width: calc(100% - 48px);
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.xp-toast-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(180deg, rgba(40,40,44,0.98), rgba(34,34,36,0.98));
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.04);
+  font-size: 14px;
+}
+
+.xp-emoji { font-size: 18px; margin-left: 2px; color: #ffd166; }
+
+.xp-text { display:flex; flex-direction:column; min-width:0; }
+.xp-line { font-weight:700; color:#ffd166; font-size:15px; }
+.xp-sub { font-size:12px; color:#d0d0d0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:260px; }
+
+.xp-close {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #cfcfcf;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+}
+.xp-close:active { transform: scale(0.98); }
+
+/* transition */
+.xp-toast-fade-enter-active { animation: xp-toast-in 260ms cubic-bezier(.2,.9,.2,1); }
+.xp-toast-fade-leave-active { animation: xp-toast-out 220ms ease-in forwards; }
+@keyframes xp-toast-in {
+  from { transform: translateX(-50%) translateY(12px) scale(0.98); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
+}
+@keyframes xp-toast-out {
+  from { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
+  to   { transform: translateX(-50%) translateY(8px) scale(0.98); opacity: 0; }
+}
+
+/* smaller on very narrow screens */
+@media (max-width: 420px) {
+  .xp-toast-inner { padding: 8px 10px; border-radius: 10px; }
+  .xp-line { font-size:14px; }
+  .xp-sub { display:none; }
+}
