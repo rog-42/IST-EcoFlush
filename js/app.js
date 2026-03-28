@@ -27,6 +27,8 @@ import {
   claimChallengeXP
 } from "./challengeSystem.js";
 
+import { newsFeed} from "./newsFeed.js";
+
 const STORAGE_KEY = "waterTracker:v1";
 
 const app = Vue.createApp({
@@ -52,6 +54,8 @@ const app = Vue.createApp({
             challenges: [],           // active challenge objects
             completedChallenges: [],
             claimedChallenges: [],
+
+            newsFeed: newsFeed,
 
             // persistence
             history: {},
@@ -80,6 +84,25 @@ const app = Vue.createApp({
         // load history and friends
         this.history = loadHistory();
         this.friends = loadFriends();
+        // If first time using the app, create default friends
+        if (!this.friends || this.friends.length === 0) {
+        this.friends = [
+            {
+                name: "Inês Gotável",
+                liters: randomMonthConsumption(this.averageDailyConsumption),
+                level: Math.floor(Math.random() * 5) + 1
+            },
+            {
+                name: "Augusto Clismo",
+                liters: randomMonthConsumption(this.averageDailyConsumption),
+                level: Math.floor(Math.random() * 5) + 1
+            }
+        ];
+
+    saveFriends(this.friends);
+}
+
+
 
         // ensure today's entry exists and set today's total
         this.refreshForNewDay();
@@ -93,6 +116,16 @@ const app = Vue.createApp({
     },
 
     computed: {
+        pageTitle() {
+            return {
+                leaderboard: "Ranking & WaterReal",
+                tracking: "Rastreador de Água",
+                news: "Notícias",
+                community: "Comunidade",
+                shop: "Loja de Recompensas"
+            }[this.screen] || "";
+        },
+
         myMonthlyTotal() {
             return computeMonthlyTotal(this.history);
         },
@@ -336,7 +369,7 @@ const app = Vue.createApp({
 
             // XP reward
             const xpReward = 30;
-            this.addXP(xpReward, "WaterReal");
+            this.addXP(xpReward, "water_real");
 
             // Mark as submitted
             this.waterReal.submitted = true;

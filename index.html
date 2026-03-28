@@ -11,11 +11,15 @@
   <link rel="stylesheet" href="css/tracking.css">
   <link rel="stylesheet" href="css/leaderboard.css">
   <link rel="stylesheet" href="css/waterreal.css">
+  <link rel="stylesheet" href="css/newsFeed.css">
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 
 <body>
 <div id="app" class="phone">
+    <header class="topbar centered">
+        <h2 class="page-title">{{ pageTitle }}</h2>
+    </header>
 
     <!-- XP toast -->
     <transition name="xp-toast-fade">
@@ -34,16 +38,35 @@
     <!-- Navigation bar -->
     <nav class="navbar">
         <button 
+            :class="{ active: screen === 'news' }"
+            @click="changeScreen('news')">
+            📰
+        </button>
+
+        <button 
+            :class="{ active: screen === 'community' }"
+            @click="changeScreen('community')">
+            👥
+        </button>
+
+        <button 
             :class="{ active: screen === 'leaderboard' }"
             @click="changeScreen('leaderboard')">
-            Ranking
+            🏆
         </button>
 
         <button 
             :class="{ active: screen === 'tracking' }"
             @click="changeScreen('tracking')">
-            Registo
+            📊
         </button>
+
+        <button 
+            :class="{ active: screen === 'shop' }"
+            @click="changeScreen('shop')">
+            🛍️
+        </button>
+
     </nav>
 
     <!-- LEADERBOARD SCREEN -->
@@ -53,7 +76,6 @@
             + Adicionar Amigo(a)
         </button>
 
-        <h2>Ranking Mensal</h2>
         <p class="subtitle">Total de Água Gasta este Mês</p>
 
         <div class="your-rank">
@@ -89,16 +111,37 @@
         <span v-else>✅ Leitura Submetida!</span>
         </button>
     </div>
+    
+    <!-- WaterReal PopUp-->
+    <div v-if="waterReal.visible" class="waterreal-modal">
+        <div class="waterreal-box">
+            <h3>📸 WaterReal</h3>
+
+            <p>
+            Tens <strong>{{ Math.floor(waterReal.countdown / 3600) }}h 
+            {{ Math.floor((waterReal.countdown % 3600) / 60) }}m</strong> restantes
+            para submeter a leitura do teu <strong>Contador da Água</strong>!
+            </p>
+
+            <p>
+            A fotografia e análise de imagens não foi implementada.<br>
+            Para este demo vamos confiar em ti 😉
+            </p>
+
+            <button class="tiny-btn" @click="fakeUploadPhoto">
+            Enviar Foto (Fake)
+            </button>
+
+            <button class="tiny-btn outline" @click="waterReal.visible = false">
+            Fechar
+            </button>
+        </div>
+    </div>
 
     <!-- TRACKING SCREEN -->
     <div v-if="screen === 'tracking'" class="tracking">
 
-    <header class="topbar centered">
-        <h2 class="page-title">Rastreador de Água</h2>
-        <p class="subtitle">Diário · Mensal</p>
-    </header>
-
-    <h3 class="section-title">Registo</h3>
+    <h2 class="section-title">Registo</h2>
 
     <section class="totals-row">
         <div class="total-card total-daily">
@@ -176,7 +219,7 @@
 
     </section>
 
-    <h3 class="section-title">Desafios Diários</h3>
+    <h2 class="section-title">Desafios Diários</h2>
 
     <section class="challenges-column">
         <div class="challenge-block" v-for="c in challenges" :key="c.id">
@@ -238,30 +281,33 @@
     </section>
 
     </div>
-    <!-- WaterReal PopUp-->
-    <div v-if="waterReal.visible" class="waterreal-modal">
-        <div class="waterreal-box">
-            <h3>📸 WaterReal</h3>
 
-            <p>
-            Tens <strong>{{ Math.floor(waterReal.countdown / 3600) }}h 
-            {{ Math.floor((waterReal.countdown % 3600) / 60) }}m</strong> restantes
-            para submeter a tua leitura!
-            </p>
+    <!-- NEWS -->
+    <div v-if="screen === 'news'" class="news">
+        <div class="news-card" v-for="n in newsFeed" :key="n.title">
+            <h3 class="news-title">{{ n.title }}</h3>
 
-            <p>
-            A fotografia e análise de imagens não foi implementada.<br>
-            Para este demo vamos confiar em ti 😉
-            </p>
+            <div class="news-meta">
+                <span class="news-source">{{ n.source }}</span>
+                <span class="news-date"> · {{ n.date }}</span>
+            </div>
 
-            <button class="tiny-btn" @click="fakeUploadPhoto">
-            Enviar Foto (Fake)
-            </button>
+            <p class="news-preview">{{ n.preview }}</p>
 
-            <button class="tiny-btn outline" @click="waterReal.visible = false">
-            Fechar
-            </button>
+            <a class="news-link" :href="n.url" target="_blank">
+                Ler mais →
+            </a>
         </div>
+    </div>
+
+    <!-- COMMUNITY -->
+    <div v-if="screen === 'community'" class="community">
+        <p class="subtitle">Liga-te à comunidade EcoFlush.</p>
+    </div>
+
+    <!-- SHOP -->
+    <div v-if="screen === 'shop'" class="shop">
+        <p class="subtitle">Troca XP por recompensas.</p>
     </div>
 </div>
 
