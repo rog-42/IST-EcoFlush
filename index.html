@@ -18,9 +18,10 @@
 
 <body>
 <div id="app" class="phone">
-    <header class="topbar centered">
-        <h2 class="page-title">{{ pageTitle }}</h2>
-    </header>
+    <div class="page-header">
+        <h1 class="page-title">{{ pageTitle }}</h1>
+        <p class="page-subtitle">{{ pageSubtitle }}</p>
+    </div>
 
     <!-- XP toast -->
     <transition name="xp-toast-fade">
@@ -51,9 +52,9 @@
         </button>
 
         <button 
-            :class="{ active: screen === 'leaderboard' }"
-            @click="changeScreen('leaderboard')">
-            🏆
+            :class="{ active: screen === 'home' }"
+            @click="changeScreen('home')">
+            💧
         </button>
 
         <button 
@@ -70,44 +71,58 @@
 
     </nav>
 
-    <!-- LEADERBOARD SCREEN -->
-    <div v-if="screen === 'leaderboard'" class="leaderboard">
-        <p class="subtitle">Total de Água Gasta este Mês</p>
+    <!-- HOME SCREEN -->
+    <div v-if="screen === 'home'" class="home-screen">
 
-        <div class="your-rank">
-            <div class="big-rank">
-                {{ sortedLeaderboard.findIndex(e => e.name === 'You') + 1 }}
-            </div>
-            <div class="your-liters">
-                Eu — {{ myMonthlyTotal }} L
-            </div>
-        </div>
-
-        <!-- Scrollable leaderboard list -->
-        <div class="leaderboard-scroll">
-            <div 
-                v-for="(entry, index) in sortedLeaderboard" 
-                :key="index" 
-                class="leaderboard-entry"
+        <!-- Mascot -->
+        <div class="mascot-container">
+            <img 
+                :src="`assets/mascot/${mascotState}.png`" 
+                alt="Mascot"
+                class="mascot"
             >
-                <span class="rank">{{ index + 1 }}</span>
-                <span class="name">{{ entry.name }}</span>
-                <span class="level">Nível {{ entry.level }}</span>
-                <span class="liters">{{ entry.liters }} L</span>
+        </div>
+
+        <!-- Daily Info Section -->
+        <div class="daily-info">
+            <h3>O teu dia</h3>
+            <p class="daily-text">
+                <!-- Placeholder text for now -->
+                Hoje poupaste <strong>10L</strong> em relação a ontem!
+            </p>
+        </div>
+
+        <!-- Monthly Leaderboard -->
+        <div class="leaderboard-section">
+            <h3>Ranking Mensal</h3>
+
+            <div class="leaderboard-scroll">
+                <div 
+                    v-for="(entry, index) in sortedLeaderboard" 
+                    :key="index" 
+                    class="leaderboard-entry"
+                    :class="{ you: entry.name === 'You' }"
+                >
+                    <span class="rank">{{ index + 1 }}</span>
+                    <span class="name">{{ entry.name }}</span>
+                    <span class="level">Nível {{ entry.level }}</span>
+                    <span class="liters">{{ entry.liters }} L</span>
+                </div>
             </div>
         </div>
 
+        <!-- WaterReal Button -->
         <button 
-        class="waterreal-btn" 
-        @click="openWaterReal"
-        :disabled="waterReal.submitted"
-        :class="{ success: waterReal.submitted }"
-        >
-        <span v-if="!waterReal.submitted">⚠️ WaterReal — Lê o teu Contador!</span>
-        <span v-else>✅ Leitura Submetida!</span>
+                class="waterreal-btn" 
+                @click="openWaterReal"
+                :disabled="waterReal.submitted"
+                :class="{ success: waterReal.submitted }"
+                >
+                <span v-if="!waterReal.submitted">⚠️ WaterReal — Lê o teu Contador!</span>
+                <span v-else>✅ Leitura Submetida!</span>
         </button>
     </div>
-    
+
     <!-- WaterReal PopUp-->
     <div v-if="waterReal.visible" class="waterreal-modal">
         <div class="waterreal-box">

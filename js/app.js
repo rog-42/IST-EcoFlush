@@ -43,8 +43,12 @@ const app = Vue.createApp({
             halfFlushLiters: 3,
             fullFlushLiters: 6,
             showerLitersPerMinute: 10,
-            targetDailyConsumption: 110,
-            averageDailyConsumption: 134,
+            targetDailyConsumption: 110,    // according to EPAL
+            averageDailyConsumption: 134,  // according to EPAL
+
+            // mascot
+            mascotState: "happy",
+            mascotTimeout: null,
 
             // gamification
             userXP: 0,
@@ -62,7 +66,7 @@ const app = Vue.createApp({
             friends: [],
 
             // UI
-            screen: "leaderboard",
+            screen: "home",
             todayString: new Date().toDateString(),
 
             xpBurst: { visible: false, amount: 0, source: '' },
@@ -141,11 +145,21 @@ const app = Vue.createApp({
     computed: {
         pageTitle() {
             return {
-                leaderboard: "Ranking & WaterReal",
+                home: "EcoFlush!",
                 tracking: "Rastreador de Água",
                 news: "Notícias",
                 community: "Comunidade",
                 shop: "Loja de Recompensas"
+            }[this.screen] || "";
+        },
+
+        pageSubtitle() {
+            return {
+                home: "Bem-vindo à EcoFlush!",
+                tracking: "Regista o teu consumo diário!",
+                news: "Últimas notícias sobre água e sustentabilidade.",
+                community: "Liga-te à tua comunidade!",
+                shop: "Troca XP por recompensas!"
             }[this.screen] || "";
         },
 
@@ -225,12 +239,26 @@ const app = Vue.createApp({
           // set the in-memory daily counter from history
           this.totalLiters = this.history[todayKey].liters || 0;
 
+        // reset mascot if yesterday was sad
+            if (this.mascotState === "sad")
+                this.mascotState = "happy";
+
           // regenerate challenges for the new day
           this.generateChallengesAndSync();
-
           // persist app-level state (keeps XP/level etc.)
           this.saveState();
         },
+
+        //---------- mascot ----------
+        updateMascotStateFromWater() {
+            if (this.totalLiters > this.targetDailyConsumption) {
+                this.mascotState = "sad";
+            } else if (this.mascotState === "sad") {
+                // Only return to happy if not in superhappy mode
+                this.mascotState = "happy";
+            }
+        },
+
 
         // ---------- tracking actions ----------
         changeScreen(target) {
@@ -240,6 +268,7 @@ const app = Vue.createApp({
         addHalfFlush() {
             this.totalLiters = addLiters(this.totalLiters, this.halfFlushLiters);
             this.updateToday();
+            this.updateMascotStateFromWater();
 
             // auto-complete the half_flush practice every time the button is pressed
             completeChallenge("half_flush");
@@ -253,6 +282,7 @@ const app = Vue.createApp({
         addFullFlush() {
             this.totalLiters = addLiters(this.totalLiters, this.fullFlushLiters);
             this.updateToday();
+            this.updateMascotStateFromWater();
             this.saveState();
         },
 
@@ -267,6 +297,7 @@ const app = Vue.createApp({
             );
 
             this.updateToday();
+            this.updateMascotStateFromWater();
 
             // conditional auto-complete for short shower
             if (minutes <= 5) {
@@ -285,6 +316,7 @@ const app = Vue.createApp({
 
             this.totalLiters = addLiters(this.totalLiters, liters);
             this.updateToday();
+            this.updateMascotStateFromWater();
 
             // no default auto-challenge for general waste; add if desired
             this.litersInput = 0;
@@ -383,6 +415,17 @@ const app = Vue.createApp({
 
             // show the bottom toast
             this.showXPBurst(amount, source);
+
+            // trigger temporary mascot superhappy state
+            this.mascotState = "superhappy";
+            if (this.mascotTimeout) clearTimeout(this.mascotTimeout);
+
+            // After 5 seconds, mascot returns to happy (unless sad)
+            this.mascotTimeout = setTimeout(() => {
+                if (this.mascotState !== "sad") {
+                    this.mascotState = "happy";
+                }
+            }, 5000);
 
             // persist state (keeps your existing save behavior)
             if (typeof this.saveState === 'function') this.saveState();

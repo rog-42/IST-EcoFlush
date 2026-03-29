@@ -20,6 +20,50 @@ body {
   flex-direction: column;
 }
 
+.page-header {
+    text-align: center;
+    margin: 0;
+    padding: 6px 0 4px;
+}
+
+.page-title {
+    font-size: 1.3rem;
+    margin: 0;
+    line-height: 1.1;
+}
+
+.page-subtitle {
+    margin: 2px 0 0;
+    font-size: 0.85rem;
+    opacity: 0.65;
+    line-height: 1.1;
+}
+
+.mascot-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    background: none;
+    border: none;
+}
+
+.mascot {
+    width: 120px;
+    height: auto;
+    display: block;
+    background: none;
+    border: none;
+}
+
+
+.daily-info {
+    text-align: center;
+    margin: 15px 0;
+    padding: 10px;
+    background: #1e1e1e;
+    border-radius: 12px;
+}
+
 /* small reset button positioned to the right of the centered phone */
 #reset-btn {
   position: fixed;

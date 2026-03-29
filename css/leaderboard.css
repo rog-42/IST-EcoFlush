@@ -43,6 +43,13 @@
   border-radius: 3px;
 }
 
+
+.leaderboard-entry.you {
+    background: #2a4fff;
+    color: white;
+    font-weight: bold;
+}
+
 .leaderboard-entry {
   background: #2a2a2d;
   padding: 15px 20px;
