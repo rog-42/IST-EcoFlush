@@ -1,0 +1,164 @@
+/* ---------- Shop container ---------- */
+.shop {
+  padding: 1rem;
+  padding-bottom: 90px; /* space above navbar */
+  box-sizing: border-box;
+}
+
+.shop-title {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.shop-section {
+  margin-top: 1.5rem;
+}
+
+.shop-section-title {
+  font-size: 1.05rem;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.shop-section-subtitle {
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+
+/* ---------- Shop item card (grid layout) ---------- */
+.shop-item-card {
+  background: #2a2a2d;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.12s ease;
+  display: grid;
+  grid-template-columns: 50px 1fr 96px; /* icon | info | button column */
+  gap: 12px;
+  align-items: center;
+}
+
+.shop-item-card:hover {
+  background: #333;
+  transform: translateY(-2px);
+}
+
+/* Icon column */
+.shop-item-icon {
+  width: 50px;
+  height: auto;
+  justify-self: start;
+  display: block;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+/* Info column */
+.shop-item-info {
+  align-self: center;
+  min-width: 0; /* allow text truncation if needed */
+}
+
+.shop-item-info h4 {
+  margin: 0;
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shop-item-info p {
+  margin: 4px 0 0;
+  color: #ccc;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Price / meta area inside info */
+.shop-item-meta {
+  margin-top: 8px;
+  display: block;
+}
+
+.price-free {
+  color: #7ee787;
+  background: rgba(126,231,135,0.08);
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.shop-item-meta .owned {
+  color: #9ad29a;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* ---------- Button column (centered) ---------- */
+.shop-item-card .tiny-btn {
+  justify-self: center;   /* horizontal center in its grid cell */
+  align-self: center;     /* vertical center */
+  width: 84px;            /* consistent button width */
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: #4da3ff;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.12s ease, transform 0.08s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+}
+
+.shop-item-card .tiny-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.shop-item-card .tiny-btn:active {
+  transform: translateY(1px);
+}
+
+/* ---------- Responsive adjustments ---------- */
+@media (max-width: 520px) {
+  .shop-item-card {
+    grid-template-columns: 44px 1fr 84px;
+    padding: 10px;
+  }
+
+  .shop-item-icon { width: 44px; }
+
+  .shop-item-card .tiny-btn {
+    width: 72px;
+    height: 34px;
+    font-size: 0.9rem;
+  }
+}
+
+.demo-warning {
+  background: #1f2937;
+  border: 1px dashed #4b5563;
+  cursor: default;
+}
+
+.demo-warning:hover {
+  background: #1f2937; /* no hover effect */
+}

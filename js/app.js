@@ -4,6 +4,7 @@ import {
     saveHistory,
     loadFriends,
     saveFriends,
+    saveCosmeticsSnapshot,
     getTodayKey,
     getYesterdayKey
 } from "./storage.js";
@@ -28,7 +29,17 @@ import {
   claimChallengeXP
 } from "./challengeSystem.js";
 
-import { newsFeed} from "./newsFeed.js";
+import { 
+    realPrizes,
+    getPrizeById 
+} from "./prizes.js";
+
+import { 
+    cosmetics,
+    loadCosmeticsFromStorage,
+} from "./cosmetics.js";
+
+import {newsFeed} from "./newsFeed.js";
 
 const STORAGE_KEY = "waterTracker:v1";
 
@@ -61,6 +72,9 @@ const app = Vue.createApp({
             claimedChallenges: [],
 
             newsFeed: newsFeed,
+
+            // MUST be a clone so Vue tracks changes
+            cosmetics: JSON.parse(JSON.stringify(cosmetics)),
 
             // persistence
             history: {},
@@ -103,7 +117,14 @@ const app = Vue.createApp({
                 type: null,
                 title: "",
                 description: ""
-            }
+            },
+
+            realPrizePopup: {
+                visible: false,
+                title: "",
+                message: "",
+                image: ""
+            },
         };
     },
 
@@ -146,6 +167,9 @@ const app = Vue.createApp({
             this.history[yesterdayKey].liters = Math.round(this.dailyGoalConsumption - 10);
             saveHistory(this.history);
         }
+        
+        loadCosmeticsFromStorage();
+        this.cosmetics = JSON.parse(JSON.stringify(cosmetics));
 
         // generate today's challenges and sync local view
         this.generateChallengesAndSync();
@@ -235,6 +259,19 @@ const app = Vue.createApp({
             if (c && c.id) map[c.id] = Number(c.xp) || 0;
             });
             return map;
+        },
+
+        realPrizes() {
+            return realPrizes;
+        },
+
+        cosmeticsList() {
+            return Object.values(this.cosmetics);
+        },
+
+        equippedCosmetic() {
+            const equipped = Object.values(this.cosmetics).find(c => c.equipped);
+            return equipped || null;
         }
     },
 
@@ -561,6 +598,66 @@ const app = Vue.createApp({
 
             // Close modal smoothly
             this.waterReal.visible = false;
+        },
+
+        // --------- Shop ----------
+        buyOrEquipCosmetic(id) {
+            const item = this.cosmetics[id];
+                if (!item) {
+                console.warn("Cosmetic not found:", id);
+                return;
+            }
+
+            // Demo: automatically mark as owned (no XP cost / purchase flow)
+            if (!item.owned) {
+                item.owned = true;
+                // persist the change
+                saveCosmeticsSnapshot(this.cosmetics);
+                return;
+            }
+
+            // If already equipped -> unequip
+            if (item.equipped) {
+                item.equipped = false;
+                saveCosmeticsSnapshot(this.cosmetics);
+                return;
+            }
+
+            // Otherwise equip this item and unequip others
+            Object.values(this.cosmetics).forEach(c => c.equipped = false);
+            item.equipped = true;
+            saveCosmeticsSnapshot(this.cosmetics);
+        },
+
+        cosmeticStyle(item) {
+            if (!item) return {};
+
+            const offsetY = item.offsetY || 0;   // px
+            const scale = item.scale || 1;       // decimal
+
+            // translate(-50%, calc(-50% + offsetYpx)) centers the overlay,
+            // then applies the vertical nudge. scale() is applied after translate.
+            return {
+                transform: `translate(-50%, calc(-50% + ${offsetY}px)) scale(${scale})`,
+                transformOrigin: "center top",
+                left: "50%",
+                top: "50%",
+                position: "absolute",
+                width: "100%",        /* baseline: match mascot width */
+                pointerEvents: "none"
+            };
+        },
+
+        openRealPrize(id) {
+            const prize = getPrizeById(id);
+            if (!prize) return;
+
+            this.realPrizePopup = {
+                visible: true,
+                title: prize.title,
+                message: prize.demoMessage,
+                image: prize.image
+            };
         },
     },
 

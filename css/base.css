@@ -39,22 +39,6 @@ body {
     line-height: 1.1;
 }
 
-.mascot-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-    background: none;
-    border: none;
-}
-
-.mascot {
-    width: 120px;
-    height: auto;
-    display: block;
-    background: none;
-    border: none;
-}
-
 .home-scroll-area {
   flex: 1;
   display: flex;

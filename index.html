@@ -14,6 +14,8 @@
   <link rel="stylesheet" href="css/newsFeed.css">
   <link rel="stylesheet" href="css/community.css">
   <link rel="stylesheet" href="css/daily-info.css">
+  <link rel="stylesheet" href="css/shop.css">
+  <link rel="stylesheet" href="css/mascot.css">
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 
@@ -76,12 +78,16 @@
     <div v-if="screen === 'home'" class="home-screen">
 
         <!-- Mascot -->
-        <div class="mascot-container">
-            <img 
-                :src="`assets/mascot/${mascotState}.png`" 
-                alt="Mascot"
-                class="mascot"
-            >
+        <div class="mascot-wrapper">
+        <img :src="`assets/mascot/${mascotState}.png`" class="mascot-base" />
+
+        <img
+            v-if="equippedCosmetic"
+            :src="equippedCosmetic.image"
+            class="mascot-cosmetic"
+            :style="cosmeticStyle(equippedCosmetic)"
+            alt="cosmetic"
+        />
         </div>
 
         <div class="daily-info" :class="todaysInfo.type">
@@ -430,11 +436,11 @@
                 </div>
 
                 <p class="small-note">
-                     Contribuíste {{ community.causeUserCurrentXP.toLocaleString() }} XP para esta missão.
-                </p>
-                <p class="small-note">
                     Progresso atual: {{ Math.floor(community.causeProgress * 100) }}%  
                     de {{ community.causeGoal.toLocaleString() }} XP.
+                </p>
+                <p class="small-note">
+                     Contribuíste {{ community.causeUserCurrentXP.toLocaleString() }} XP para esta missão.
                 </p>
             </div>
 
@@ -448,7 +454,6 @@
         </div>
 
     </div>
-
 
     <!-- POPUP -->
     <div v-if="communityPopup.visible" class="community-modal">
@@ -488,6 +493,84 @@
 
         </div>
     </div>
+
+    <!-- SHOP -->
+    <div v-if="screen === 'shop'" class="shop">
+        <!-- MASCOT -->
+        <div class="mascot-wrapper">
+        <img :src="`assets/mascot/${mascotState}.png`" class="mascot-base" />
+
+        <img
+            v-if="equippedCosmetic"
+            :src="equippedCosmetic.image"
+            class="mascot-cosmetic"
+            :style="cosmeticStyle(equippedCosmetic)"
+            alt="cosmetic"
+        />
+        </div>
+
+        <!-- Cosmetics Section -->
+        <div class="shop-section">
+            <h3>✨ Cosméticos</h3>
+
+            <div 
+                v-for="item in cosmeticsList"
+                :key="item.id"
+                class="shop-item-card"
+            >
+                <img :src="item.image" class="shop-item-icon">
+
+                <div class="shop-item-info">
+                    <h4>{{ item.name }}</h4>
+                    <p>{{ item.description }}</p>
+                </div>
+
+                <button class="tiny-btn" @click="buyOrEquipCosmetic(item.id)">
+                    <span v-if="!item.owned">Comprar</span>
+                    <span v-else-if="item.equipped">Desequipar</span>
+                    <span v-else>Equipar</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Real Prizes Section -->
+        <div class="shop-section">
+            <h3>🎁 Prémios Reais</h3>
+
+            <div 
+                v-for="prize in realPrizes"
+                :key="prize.id"
+                class="shop-item-card"
+                @click="openRealPrize(prize.id)"
+            >
+                <img :src="prize.image" class="shop-item-icon">
+
+                <div class="shop-item-info">
+                    <h4>{{ prize.title }}</h4>
+                    <p>{{ prize.description }}</p>
+                </div>
+
+                <span class="shop-item-arrow">›</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Real Prize PopUp -->
+    <div v-if="realPrizePopup.visible" class="waterreal-modal">
+        <div class="waterreal-box">
+
+            <img :src="realPrizePopup.image" class="prize-image">
+
+            <h3>{{ realPrizePopup.title }}</h3>
+
+            <p v-html="realPrizePopup.message"></p>
+
+            <button class="tiny-btn outline" @click="realPrizePopup.visible = false">
+                Fechar
+            </button>
+        </div>
+    </div>
+
 </div>
 
 <button id="reset-btn" onclick="if(confirm('Reset all app data? This cannot be undone.')){ localStorage.clear(); location.reload(); }" aria-label="Reset app">

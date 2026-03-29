@@ -1,0 +1,24 @@
+.mascot-wrapper {
+  position: relative;
+  width: 160px;        /* or responsive width like 30vw */
+  height: auto;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mascot-base {
+  width: 100%;
+  display: block;
+}
+
+.mascot-cosmetic {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center top;
+  pointer-events: none;
+  will-change: transform;
+  /* do not set transform here; we set it inline from Vue */
+}
