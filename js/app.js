@@ -73,6 +73,31 @@ const app = Vue.createApp({
                 countdown: 24 * 60 * 60, // 24 hours in seconds
                 interval: null,
                 submitted: false
+            },
+
+            // fake values for the community tab, fell free to change
+            community: {
+                joinedCause: false,
+                
+                causeGoal: 100000,
+                causeProgress: 0.42, 
+                causeTotal: 42000,  // 42% toward 100k XP
+                causeUserCurrentXP: 0, 
+                
+                joinedSchool: false,
+                fakePlacementSchool: 12,
+                fakeTotalSchool: 87,
+                
+                joinedEpal: false,
+                fakePlacementEpal: 34,
+                fakeTotalEpal: 210
+            },
+
+            communityPopup: {
+                visible: false,
+                type: null,
+                title: "",
+                description: ""
             }
         };
     },
@@ -86,23 +111,21 @@ const app = Vue.createApp({
         this.friends = loadFriends();
         // If first time using the app, create default friends
         if (!this.friends || this.friends.length === 0) {
-        this.friends = [
-            {
-                name: "Inês Gotável",
-                liters: randomMonthConsumption(this.averageDailyConsumption),
-                level: Math.floor(Math.random() * 5) + 1
-            },
-            {
-                name: "Augusto Clismo",
-                liters: randomMonthConsumption(this.averageDailyConsumption),
-                level: Math.floor(Math.random() * 5) + 1
-            }
-        ];
+            this.friends = [
+                {
+                    name: "Inês Gotável",
+                    liters: randomMonthConsumption(this.averageDailyConsumption),
+                    level: Math.floor(Math.random() * 5) + 1
+                },
+                {
+                    name: "Augusto Clismo",
+                    liters: randomMonthConsumption(this.averageDailyConsumption),
+                    level: Math.floor(Math.random() * 5) + 1
+                }
+            ];
 
-    saveFriends(this.friends);
-}
-
-
+            saveFriends(this.friends);
+        }
 
         // ensure today's entry exists and set today's total
         this.refreshForNewDay();
@@ -133,7 +156,11 @@ const app = Vue.createApp({
         sortedLeaderboard() {
             return buildLeaderboard(this.myMonthlyTotal, this.level, this.friends);
         },
-        
+
+        sortedFriends() {
+            return [...this.friends].sort((a, b) => b.level - a.level);
+        },
+
         // map of challenge id -> numeric XP for fast lookups in templates
         challengeXPMap() {
             const map = {};
@@ -156,6 +183,7 @@ const app = Vue.createApp({
             this.level = s.level || 1;
             this.showerMinutesInput = s.showerMinutesInput || 0;
             this.litersInput = s.litersInput || 0;
+            if (s.community) {this.community = s.community;}
           } catch (e) {
             console.warn("Failed to load app state", e);
           }
@@ -167,7 +195,8 @@ const app = Vue.createApp({
             userXP: this.userXP,
             level: this.level,
             showerMinutesInput: this.showerMinutesInput,
-            litersInput: this.litersInput
+            litersInput: this.litersInput,
+            community: this.community
           };
           try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
@@ -283,6 +312,48 @@ const app = Vue.createApp({
             saveFriends(this.friends);
         },
 
+        openCommunityPopup(type) {
+            this.communityPopup.type = type;
+            this.communityPopup.visible = true;
+
+            if (type === "school") {
+                this.communityPopup.title = "Competição Escolar";
+                this.communityPopup.description = "Neste demo só existe uma escola disponível.";
+            }
+
+            if (type === "epal") {
+                this.communityPopup.title = "Liga Local";
+                this.communityPopup.description = "Neste demo só existe uma zona EPAL disponível.";
+            }
+
+            if (type === "cause") {
+                this.communityPopup.title = "Missão Global";
+                this.communityPopup.description =
+                    "Objetivo global: atingir 1.000.000 XP para financiar a construção de uma casa de banho comunitária numa escola em Moçambique. \
+                    Cada XP ganho pelos utilizadores contribui diretamente para este objetivo.";
+            }
+        },
+
+        joinCommunityItem() {
+            const t = this.communityPopup.type;
+
+            if (t === "school") {
+                this.community.joinedSchool = true;
+                this.addXP(20, "join_competition");
+            }
+            if (t === "epal"){
+                this.community.joinedEpal = true;
+                this.addXP(20, "join_competition");
+            }
+            if (t === "cause"){
+                this.community.joinedCause = true;
+                this.addXP(50, "join_global_cause");
+            }
+
+            this.communityPopup.visible = false;
+            this.saveState();
+        },
+
         // ---------- XP / leveling ----------
         getChallengeXP(id) {
             return this.challengeXPMap[id] || 0;
@@ -296,6 +367,19 @@ const app = Vue.createApp({
             this.userXP = (this.userXP || 0) + amount;
             const newLevel = Math.floor(this.userXP / 200) + 1;
             if (newLevel > this.level) this.level = newLevel;
+
+            // contriute XP for global cause
+            if (this.community.joinedCause) {
+                // Add to user's personal contribution
+                this.community.causeUserCurrentXP += amount;
+
+                // Add to global total
+                this.community.causeTotal += amount;
+
+                // Update progress (0 → 1)
+                this.community.causeProgress =
+                    Math.min(this.community.causeTotal / this.community.causeGoal, 1);
+            }
 
             // show the bottom toast
             this.showXPBurst(amount, source);
@@ -377,7 +461,6 @@ const app = Vue.createApp({
             // Close modal smoothly
             this.waterReal.visible = false;
         },
-
     },
 
     mounted() {

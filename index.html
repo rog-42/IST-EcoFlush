@@ -10,8 +10,9 @@
   <link rel="stylesheet" href="css/navbar.css">
   <link rel="stylesheet" href="css/tracking.css">
   <link rel="stylesheet" href="css/leaderboard.css">
-  <link rel="stylesheet" href="css/waterreal.css">
+  <link rel="stylesheet" href="css/waterReal.css">
   <link rel="stylesheet" href="css/newsFeed.css">
+  <link rel="stylesheet" href="css/community.css">
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 
@@ -71,11 +72,6 @@
 
     <!-- LEADERBOARD SCREEN -->
     <div v-if="screen === 'leaderboard'" class="leaderboard">
-
-        <button class="add-friend-btn" @click="promptAddFriend">
-            + Adicionar Amigo(a)
-        </button>
-
         <p class="subtitle">Total de Água Gasta este Mês</p>
 
         <div class="your-rank">
@@ -302,12 +298,183 @@
 
     <!-- COMMUNITY -->
     <div v-if="screen === 'community'" class="community">
-        <p class="subtitle">Liga-te à comunidade EcoFlush.</p>
+
+        <!-- FRIENDS -->
+        <div class="community-card friends-card">
+            <h3>👥 Amigos</h3>
+
+            <button class="tiny-btn full-btn" @click="promptAddFriend">
+                + Adicionar Amigo
+            </button>
+
+            <!-- Scrollable mini leaderboard -->
+            <div class="friends-scroll">
+                <div 
+                    v-for="(f, index) in sortedFriends" 
+                    :key="f.name" 
+                    class="friends-entry"
+                >
+                    <span class="f-rank">{{ index + 1 }}</span>
+                    <span class="f-name">{{ f.name }}</span>
+                    <span class="f-level">Nível {{ f.level }}</span>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- SCHOOL COMPETITION -->
+        <div class="community-card">
+            <div class="community-header">
+                <h3>🏫 Competição Escolar</h3>
+
+                <!-- Logo only AFTER joining -->
+                <img 
+                    v-if="community.joinedSchool"
+                    src="assets/logos/ist_logo.svg" 
+                    class="community-logo"
+                    alt="IST Logo"
+                >
+            </div>
+
+            <p v-if="!community.joinedSchool">
+                Compete contra os teus colegas da escola/universidade!
+            </p>
+
+            <div v-else>
+                <p>A competir no <strong>IST</strong>.</p>
+                <p>Posição: <strong>{{ community.fakePlacementSchool }}º</strong> de {{ community.fakeTotalSchool }} participantes.</p>
+                <p class="small-note">Leaderboard completo ainda não disponível neste demo.</p>
+            </div>
+
+            <button 
+                v-if="!community.joinedSchool"
+                class="tiny-btn full-btn"
+                @click="openCommunityPopup('school')"
+            >
+                Juntar-me
+            </button>
+        </div>
+
+
+        <!-- EPAL COMPETITION -->
+        <div class="community-card">
+            <div class="community-header">
+                <h3>💧 Liga Local</h3>
+
+                <img 
+                    v-if="community.joinedEpal"
+                    src="assets/logos/epal_logo.svg" 
+                    class="community-logo"
+                    alt="EPAL Logo"
+                >
+            </div>
+
+            <p v-if="!community.joinedEpal">
+                Compete dentro da zona residencial!
+            </p>
+
+            <div v-else>
+                <p>A competir na <strong>Liga EPAL - Zona de Arroios</strong>.</p>
+                <p>Posição: <strong>{{ community.fakePlacementEpal }}º</strong> de {{ community.fakeTotalEpal }} participantes.</p>
+                <p class="small-note">Leaderboard completo ainda não disponível neste demo.</p>
+            </div>
+
+            <button 
+                v-if="!community.joinedEpal"
+                class="tiny-btn full-btn"
+                @click="openCommunityPopup('epal')"
+            >
+                Juntar-me
+            </button>
+        </div>
+
+
+        <!-- GLOBAL CAUSE -->
+        <div class="community-card">
+            <div class="community-header">
+                <h3>🌍 Desafio Global</h3>
+
+                <img 
+                    v-if="community.joinedCause"
+                    src="assets/logos/unicef_logo.svg" 
+                    class="community-logo"
+                    alt="UNICEF Logo"
+                >
+            </div>
+
+            <p v-if="!community.joinedCause">
+                Junta-te a uma causa global.
+            </p>
+
+            <div v-else>
+                <p>
+                    A apoiar a missão UNICEF: contribuir para alcançar 1.000.000 XP 
+                    e financiar a construção de uma casa de banho comunitária numa 
+                    escola em Moçambique.
+                </p>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" :style="{ width: (community.causeProgress * 100) + '%' }"></div>
+                </div>
+
+                <p class="small-note">
+                     Contribuíste {{ community.causeUserCurrentXP.toLocaleString() }} XP para esta missão.
+                </p>
+                <p class="small-note">
+                    Progresso atual: {{ Math.floor(community.causeProgress * 100) }}%  
+                    de {{ community.causeGoal.toLocaleString() }} XP.
+                </p>
+            </div>
+
+            <button 
+                v-if="!community.joinedCause"
+                class="tiny-btn full-btn"
+                @click="openCommunityPopup('cause')"
+            >
+                Juntar-me
+            </button>
+        </div>
+
     </div>
 
-    <!-- SHOP -->
-    <div v-if="screen === 'shop'" class="shop">
-        <p class="subtitle">Troca XP por recompensas.</p>
+
+    <!-- POPUP -->
+    <div v-if="communityPopup.visible" class="community-modal">
+        <div class="community-box">
+
+            <h3>{{ communityPopup.title }}</h3>
+            <p class="popup-subtitle">Neste demo só existe uma opção disponível.</p>
+
+            <!-- SCHOOL -->
+            <div v-if="communityPopup.type === 'school'" class="popup-option">
+                <img src="assets/logos/ist_logo.svg" class="popup-logo">
+                <strong>Instituto Superior Técnico (IST)</strong>
+            </div>
+
+            <!-- EPAL -->
+            <div v-else-if="communityPopup.type === 'epal'" class="popup-option">
+                <img src="assets/logos/epal_logo.svg" class="popup-logo">
+                <strong>Liga EPAL – Arroios</strong>
+            </div>
+
+            <!-- CAUSE -->
+            <div v-else-if="communityPopup.type === 'cause'" class="popup-option">
+                <img src="assets/logos/unicef_logo.svg" class="popup-logo">
+
+                <div class="popup-text">
+                    <strong>UNICEF – Missão de Saneamento</strong>
+                    <p class="popup-desc">
+                        Junta-te ao desafio global: alcançar 100.000 XP para construir 
+                        uma casa de banho comunitária numa escola em Moçambique. 
+                        Cada XP ganho aproxima a conclusão da obra!
+                    </p>
+                </div>
+            </div>
+
+            <button class="tiny-btn full-btn" @click="joinCommunityItem">Confirmar</button>
+            <button class="tiny-btn outline full-btn" @click="communityPopup.visible = false">Cancelar</button>
+
+        </div>
     </div>
 </div>
 
