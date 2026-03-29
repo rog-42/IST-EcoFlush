@@ -55,13 +55,12 @@ body {
     border: none;
 }
 
-
-.daily-info {
-    text-align: center;
-    margin: 15px 0;
-    padding: 10px;
-    background: #1e1e1e;
-    border-radius: 12px;
+.home-scroll-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 90px; /* space above navbar */
 }
 
 /* small reset button positioned to the right of the centered phone */

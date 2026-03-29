@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="css/waterReal.css">
   <link rel="stylesheet" href="css/newsFeed.css">
   <link rel="stylesheet" href="css/community.css">
+  <link rel="stylesheet" href="css/daily-info.css">
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 
@@ -83,15 +84,11 @@
             >
         </div>
 
-        <!-- Daily Info Section -->
-        <div class="daily-info">
-            <h3>O teu dia</h3>
-            <p class="daily-text">
-                <!-- Placeholder text for now -->
-                Hoje poupaste <strong>10L</strong> em relação a ontem!
-            </p>
+        <div class="daily-info" :class="todaysInfo.type">
+            <h3>Como está a ser o teu dia?</h3>
+            <p class="daily-text" v-html="todaysInfo.message"></p>
         </div>
-
+        
         <!-- Monthly Leaderboard -->
         <div class="leaderboard-section">
             <h3>Ranking Mensal</h3>

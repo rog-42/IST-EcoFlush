@@ -4,7 +4,8 @@ import {
     saveHistory,
     loadFriends,
     saveFriends,
-    getTodayKey
+    getTodayKey,
+    getYesterdayKey
 } from "./storage.js";
 
 import {
@@ -43,8 +44,8 @@ const app = Vue.createApp({
             halfFlushLiters: 3,
             fullFlushLiters: 6,
             showerLitersPerMinute: 10,
-            targetDailyConsumption: 110,    // according to EPAL
-            averageDailyConsumption: 134,  // according to EPAL
+            dailyGoalConsumption: 110,      // according to EPAL
+            averageDailyConsumption: 134,   // according to EPAL
 
             // mascot
             mascotState: "happy",
@@ -135,8 +136,16 @@ const app = Vue.createApp({
         this.refreshForNewDay();
 
         // estimate past days if needed and persist
-        this.history = estimatePastDays(this.history, this.averageDailyConsumption);
+        this.history = estimatePastDays(this.history, this.dailyGoalConsumption - 10);
         saveHistory(this.history);
+
+        // Ensure yesterday exists (covers the 1st-of-month case)
+        const yesterdayKey = getYesterdayKey();
+        if (!this.history[yesterdayKey]) {
+            this.history[yesterdayKey] = createEmptyDay();
+            this.history[yesterdayKey].liters = Math.round(this.dailyGoalConsumption - 10);
+            saveHistory(this.history);
+        }
 
         // generate today's challenges and sync local view
         this.generateChallengesAndSync();
@@ -145,7 +154,7 @@ const app = Vue.createApp({
     computed: {
         pageTitle() {
             return {
-                home: "EcoFlush!",
+                home: "EcoFlush",
                 tracking: "Rastreador de Água",
                 news: "Notícias",
                 community: "Comunidade",
@@ -161,6 +170,50 @@ const app = Vue.createApp({
                 community: "Liga-te à tua comunidade!",
                 shop: "Troca XP por recompensas!"
             }[this.screen] || "";
+        },
+
+        todaysInfo() {
+            const goal = this.dailyGoalConsumption;
+            const today = this.totalLiters;
+
+            const yesterdayKey = getYesterdayKey();
+            const yesterday = this.history[yesterdayKey]?.liters ?? 0;
+
+            // 1. User exceeded the daily goal
+            if (today > goal) {
+                const diff = today - goal;
+                return {
+                    type: "over_goal",
+                    amount: diff,
+                    message: `😢 Hoje gastaste <strong>${diff}L</strong> acima da meta de ${this.dailyGoalConsumption}L. Amanhã voltamos ao foco!`
+                };
+            }
+
+            // 2. User stayed under the goal → compare with yesterday
+            const diff = yesterday - today;
+
+            if (diff > 0) {
+                return {
+                    type: "saved_vs_yesterday",
+                    amount: diff,
+                    message: `🌱 Boa! Hoje poupaste <strong>${diff}L</strong> em relação a ontem. Continua assim!`
+                };
+            }
+
+            if (diff < 0) {
+                return {
+                    type: "worse_than_yesterday",
+                    amount: -diff,
+                    message: `💧 Hoje gastaste <strong>${-diff}L</strong> a mais do que ontem. Ainda vais a tempo de equilibrar!`
+                };
+            }
+
+            // 3. Same usage as yesterday
+            return {
+                type: "same_as_yesterday",
+                amount: 0,
+                message: `📊 Hoje estás igual a ontem. Consistência também conta!`
+            };
         },
 
         myMonthlyTotal() {
@@ -193,6 +246,7 @@ const app = Vue.createApp({
             if (!raw) return;
             const s = JSON.parse(raw);
             this.totalLiters = s.totalLiters || 0;
+            this.mascotState = s.mascotState || "happy";
             this.userXP = s.userXP || 0;
             this.level = s.level || 1;
             this.showerMinutesInput = s.showerMinutesInput || 0;
@@ -206,6 +260,7 @@ const app = Vue.createApp({
         saveState() {
           const s = {
             totalLiters: this.totalLiters,
+            mascotState: this.mascotState,
             userXP: this.userXP,
             level: this.level,
             showerMinutesInput: this.showerMinutesInput,
@@ -226,32 +281,36 @@ const app = Vue.createApp({
 
         // ---------- daily refresh ----------
         refreshForNewDay() {
-          const todayKey = getTodayKey();
+            const todayKey = getTodayKey();
+            const history = loadHistory();
 
-          // ensure history is loaded
-          this.history = loadHistory();
+            const isNewDay = !history[todayKey];
 
-          if (!this.history[todayKey]) {
-            this.history[todayKey] = createEmptyDay();
-            saveHistory(this.history);
-          }
+            if (isNewDay) {
+                // create today's entry
+                history[todayKey] = createEmptyDay();
+                saveHistory(history);
 
-          // set the in-memory daily counter from history
-          this.totalLiters = this.history[todayKey].liters || 0;
+                // reset mascot for a new day
+                if (this.mascotState === "sad") {
+                    this.mascotState = "happy";
+                }
 
-        // reset mascot if yesterday was sad
-            if (this.mascotState === "sad")
-                this.mascotState = "happy";
+                // generate new challenges
+                this.generateChallengesAndSync();
+            }
 
-          // regenerate challenges for the new day
-          this.generateChallengesAndSync();
-          // persist app-level state (keeps XP/level etc.)
-          this.saveState();
+            // always update in-memory state
+            this.history = history;
+            this.totalLiters = history[todayKey].liters || 0;
+
+            // persist app-level state
+            this.saveState();
         },
 
         //---------- mascot ----------
         updateMascotStateFromWater() {
-            if (this.totalLiters > this.targetDailyConsumption) {
+            if (this.totalLiters > this.dailyGoalConsumption) {
                 this.mascotState = "sad";
             } else if (this.mascotState === "sad") {
                 // Only return to happy if not in superhappy mode
@@ -417,15 +476,14 @@ const app = Vue.createApp({
             this.showXPBurst(amount, source);
 
             // trigger temporary mascot superhappy state
+            const previousState = this.mascotState;
             this.mascotState = "superhappy";
             if (this.mascotTimeout) clearTimeout(this.mascotTimeout);
 
-            // After 5 seconds, mascot returns to happy (unless sad)
+            // After 4 seconds, mascot returns to happy (unless sad)
             this.mascotTimeout = setTimeout(() => {
-                if (this.mascotState !== "sad") {
-                    this.mascotState = "happy";
-                }
-            }, 5000);
+                this.mascotState = previousState;
+            }, 4000);
 
             // persist state (keeps your existing save behavior)
             if (typeof this.saveState === 'function') this.saveState();

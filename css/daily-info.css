@@ -1,0 +1,28 @@
+.daily-info {
+    text-align: center;
+    margin: 15px 0;
+    padding: 10px;
+    background: #1e1e1e;
+    border-radius: 12px;
+}
+
+.daily-info.saved_vs_yesterday {
+    background: #16351f; /* soft green */
+    color: #9ef7b1;
+}
+
+.daily-info.worse_than_yesterday {
+
+    background: #3a2a1f; /* warm orange */
+    color: #ffd9a1;
+}
+
+.daily-info.over_goal {
+    background: #3a1f1f; /* soft red */
+    color: #ffb3b3;
+}
+
+.daily-info.same_as_yesterday {
+    background: #1e1e1e;
+    color: #ccc;
+}
