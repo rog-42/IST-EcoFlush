@@ -1,4 +1,4 @@
-# 💧 EcoFlush — Prototype for a Water Tracker App for my *Water Talks* Course Final Project
+# 💧 EcoFlush — Web Prototype for a Water Tracker App
 
 This project is a **functional prototype** of a water‑saving mobile app, created for the **Water Talks** course at my university.  
 It also served as a personal exercise to learn more about **web development**, especially Vue 3, reactive UI patterns, and browser‑based persistence.
