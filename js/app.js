@@ -168,6 +168,8 @@ const app = Vue.createApp({
             saveHistory(this.history);
         }
         
+        this.updateMascotStateFromWater();
+
         loadCosmeticsFromStorage();
         this.cosmetics = JSON.parse(JSON.stringify(cosmetics));
 

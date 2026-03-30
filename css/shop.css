@@ -93,15 +93,17 @@
   display: block;
 }
 
-.price-free {
-  color: #7ee787;
-  background: rgba(126,231,135,0.08);
-  padding: 4px 8px;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  display: inline-block;
+.free-badge {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 2px 6px;
+    background: #3b82f6; /* bright blue */
+    color: white;         /* clean contrast */
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
 }
+
 
 .shop-item-meta .owned {
   color: #9ad29a;

@@ -523,7 +523,15 @@
                 <div class="shop-item-info">
                     <h4>{{ item.name }}</h4>
                     <p>{{ item.description }}</p>
+
+                    <small 
+                        v-if="item.xpCost === 0 && !item.owned" 
+                        class="free-badge"
+                    >
+                        Grátis para este demo!
+                    </small>
                 </div>
+
 
                 <button class="tiny-btn" @click="buyOrEquipCosmetic(item.id)">
                     <span v-if="!item.owned">Comprar</span>
