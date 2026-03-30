@@ -3,7 +3,7 @@
 export const realPrizes = [
     {
         id: "spotify",
-        title: "1 Mês de Spotify Premium",
+        title: "Spotify Premium",
         description: "Desfruta de música sem anúncios durante um mês inteiro!",
         image: "assets/logos/spotify.svg",
         xpRequired: 5000, // demo value
@@ -14,7 +14,7 @@ export const realPrizes = [
     },
     {
         id: "cinema",
-        title: "50% Desconto em Bilhetes de Cinema",
+        title: "Bilhetes de Cinema",
         description: "Vê o teu filme favorito com metade do preço!",
         image: "assets/logos/cinemas_nos.svg",
         xpRequired: 3000, // demo value

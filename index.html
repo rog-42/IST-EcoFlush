@@ -564,20 +564,15 @@
     </div>
 
     <!-- Real Prize PopUp -->
-    <div v-if="realPrizePopup.visible" class="waterreal-modal">
-        <div class="waterreal-box">
-
-            <img :src="realPrizePopup.image" class="prize-image">
-
-            <h3>{{ realPrizePopup.title }}</h3>
-
-            <p v-html="realPrizePopup.message"></p>
-
-            <button class="tiny-btn outline" @click="realPrizePopup.visible = false">
-                Fechar
-            </button>
-        </div>
+    <div v-if="realPrizePopup.visible" class="waterreal-modal shop-popup">
+    <div class="waterreal-box">
+        <img :src="realPrizePopup.image" class="prize-image">
+        <h3>{{ realPrizePopup.title }}</h3>
+        <p v-html="realPrizePopup.message"></p>
+        <button class="tiny-btn outline" @click="realPrizePopup.visible = false">Fechar</button>
     </div>
+    </div>
+
 
 </div>
 

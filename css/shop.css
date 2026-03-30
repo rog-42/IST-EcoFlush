@@ -1,38 +1,24 @@
-/* ---------- Shop container ---------- */
+/* Container */
 .shop {
   padding: 1rem;
-  padding-bottom: 90px; /* space above navbar */
+  padding-bottom: 90px;
   box-sizing: border-box;
-}
-
-.shop-title {
-  text-align: center;
-  margin-bottom: 1rem;
   color: #fff;
 }
 
+/* Section heading */
 .shop-section {
   margin-top: 1.5rem;
 }
-
-.shop-section-title {
+.shop-section h3 {
+  margin: 0 0 0.5rem 0;
   font-size: 1.05rem;
-  color: #fff;
-  margin-bottom: 0.5rem;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
 }
 
-.shop-section-subtitle {
-  color: #cbd5e1;
-  font-size: 0.85rem;
-  font-weight: 600;
-  opacity: 0.9;
-}
-
-
-/* ---------- Shop item card (grid layout) ---------- */
+/* Item card (grid) */
 .shop-item-card {
   background: #2a2a2d;
   padding: 12px;
@@ -41,32 +27,29 @@
   cursor: pointer;
   transition: background 0.18s ease, transform 0.12s ease;
   display: grid;
-  grid-template-columns: 50px 1fr 96px; /* icon | info | button column */
+  grid-template-columns: 50px 1fr 96px;
   gap: 12px;
   align-items: center;
+  box-sizing: border-box;
 }
-
 .shop-item-card:hover {
   background: #333;
   transform: translateY(-2px);
 }
 
-/* Icon column */
+/* Icon */
 .shop-item-icon {
   width: 50px;
   height: auto;
-  justify-self: start;
   display: block;
   border-radius: 8px;
   object-fit: contain;
 }
 
-/* Info column */
+/* Info */
 .shop-item-info {
-  align-self: center;
-  min-width: 0; /* allow text truncation if needed */
+  min-width: 0;
 }
-
 .shop-item-info h4 {
   margin: 0;
   color: #fff;
@@ -76,46 +59,32 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .shop-item-info p {
   margin: 4px 0 0;
   color: #ccc;
   font-size: 0.9rem;
   line-height: 1.2;
-  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Price / meta area inside info */
-.shop-item-meta {
-  margin-top: 8px;
-  display: block;
-}
-
+/* Free badge */
 .free-badge {
-    display: inline-block;
-    margin-top: 4px;
-    padding: 2px 6px;
-    background: #3b82f6; /* bright blue */
-    color: white;         /* clean contrast */
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 600;
-}
-
-
-.shop-item-meta .owned {
-  color: #9ad29a;
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 6px;
+  background: #3b82f6;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 0.7rem;
   font-weight: 600;
-  font-size: 0.85rem;
 }
 
-/* ---------- Button column (centered) ---------- */
+/* Action button */
 .shop-item-card .tiny-btn {
-  justify-self: center;   /* horizontal center in its grid cell */
-  align-self: center;     /* vertical center */
-  width: 84px;            /* consistent button width */
+  justify-self: center;
+  align-self: center;
+  width: 84px;
   height: 36px;
   border: none;
   border-radius: 8px;
@@ -128,39 +97,41 @@
   align-items: center;
   justify-content: center;
   padding: 0 10px;
+  box-sizing: border-box;
 }
-
 .shop-item-card .tiny-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
-
 .shop-item-card .tiny-btn:active {
   transform: translateY(1px);
 }
 
-/* ---------- Responsive adjustments ---------- */
-@media (max-width: 520px) {
-  .shop-item-card {
-    grid-template-columns: 44px 1fr 84px;
-    padding: 10px;
-  }
-
-  .shop-item-icon { width: 44px; }
-
-  .shop-item-card .tiny-btn {
-    width: 72px;
-    height: 34px;
-    font-size: 0.9rem;
-  }
+/* Arrow for real prize items */
+.shop-item-arrow {
+  justify-self: center;
+  color: #9aa4b2;
+  font-size: 1.4rem;
+  line-height: 1;
 }
 
-.demo-warning {
-  background: #1f2937;
-  border: 1px dashed #4b5563;
-  cursor: default;
+/* Shop-scoped Real Prize popup image constraints */
+.shop-popup .prize-image {
+  display: block;
+  width: 100%;
+  max-width: 280px;    /* prevents huge images */
+  max-height: 46vh;    /* keeps tall images from pushing content off-screen */
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto 12px;
+  border-radius: 8px;
 }
 
-.demo-warning:hover {
-  background: #1f2937; /* no hover effect */
+/* Tighter limits on small phones */
+@media (max-width: 420px) {
+  .shop-popup .prize-image {
+    max-width: 220px;
+    max-height: 40vh;
+    margin-bottom: 8px;
+  }
 }
